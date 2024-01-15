@@ -4,7 +4,7 @@ Practicing frequency domain analysis (Transfer functions, C2D, Bode Diagrams, et
 Plots generated uses Rust's standard [Plotters](https://docs.rs/plotters/latest/plotters/) library.
 
 ## Transfer Functions 
-Added support for generic transfer functions via `TransferFunction` struct. Example below shows Bode Plot of system with transfer function $\frac{\omega_0^2}{s^2 + 2\zeta\omega_0 s + \omega_0^2}$ with $\zeta=0.05$ and $\omega=4$.
+Added support for generic transfer functions via `TransferFunction` struct. Example below shows Bode Plot of system with transfer function $\frac{\omega_0^2}{s^2 + 2\zeta\omega_0 s + \omega_0^2}$ with $\zeta=0.05$ and $\omega_0=4$.
 
 ![TF_std](./media/TF_bode.png)
 
