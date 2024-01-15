@@ -3,12 +3,34 @@ use num;
 use plotters::prelude::*;
 use std::{f64::consts::PI, f64::INFINITY, str};
 
+/*
+
+@TODO!
+   - add Bode Plot struct with default setups
+   - add more filters
+   - add Transfer Function operators
+   - add z-transform
+   - add ability to get discrete filter coefficients
+   - add signal generator struct
+
+*/
+
 pub struct TransferFunction {
     // increasing powers of s
     numerator: Vec<f64>,
 
     // increasing powers of s
     denominator: Vec<f64>,
+}
+
+impl Default for TransferFunction {
+    fn default() -> Self {
+        // Default behavior returns an integrator
+        Self {
+            numerator: vec![1.0],
+            denominator: vec![0.0, 1.0],
+        }
+    }
 }
 
 impl TransferFunction {
@@ -56,8 +78,8 @@ impl TransferFunction {
         };
 
         let mut cc = ChartBuilder::on(&upper)
-            .margin(5)
-            .set_all_label_area_size(50)
+            .margin(10)
+            .set_all_label_area_size(110)
             .caption("Gain [dB]", ("monospace", 40).into_font().color(&WHITE))
             .build_cartesian_2d(cx.clone().log_scale(), (mmin - 1.0)..(mmax + 1.0))
             .unwrap();
@@ -74,26 +96,14 @@ impl TransferFunction {
             })
             .x_labels(20)
             .y_labels(5)
-            .x_label_formatter(&|v| format!("{:.1}", v))
-            .x_desc("Frequency [Hz]")
-            .x_label_style(&WHITE)
-            .y_label_formatter(&|v| {
-                let mut num = v
-                    .abs()
-                    .to_string()
-                    .as_bytes()
-                    .rchunks(3)
-                    .rev()
-                    .map(str::from_utf8)
-                    .collect::<Result<Vec<&str>, _>>()
-                    .unwrap()
-                    .join(",");
-                if v < &0.0 {
-                    num = format!("-{num}");
-                }
-                num
+            .x_label_formatter(&|v| {
+                let power = v.log10();
+                format!("10^{power}")
             })
-            .y_label_style(&WHITE)
+            .x_desc("Frequency [Hz]")
+            .x_label_style(("monospace", 25, &WHITE).into_text_style(upper))
+            .y_label_formatter(&|v| format!("{:.1}", v))
+            .y_label_style(("monospace", 25, &WHITE).into_text_style(upper))
             .y_desc("Gain [dB]")
             .draw()
             .unwrap();
@@ -130,8 +140,8 @@ impl TransferFunction {
         };
 
         let mut cc = ChartBuilder::on(&lower)
-            .margin(5)
-            .set_all_label_area_size(50)
+            .margin(10)
+            .set_all_label_area_size(110)
             .caption("Phase [deg]", ("monospace", 40).into_font().color(&WHITE))
             .build_cartesian_2d(cx.log_scale(), (pmin - 10.0)..(pmax + 10.0))
             .unwrap();
@@ -148,11 +158,14 @@ impl TransferFunction {
             })
             .x_labels(20)
             .y_labels(5)
-            .x_label_formatter(&|v| format!("{:.1}", v))
+            .x_label_formatter(&|v| {
+                let power = v.log10();
+                format!("10^{power}")
+            })
             .x_desc("Frequency [Hz]")
-            .x_label_style(&WHITE)
+            .x_label_style(("monospace", 25, &WHITE).into_text_style(lower))
             .y_label_formatter(&|v| format!("{:.1}", v))
-            .y_label_style(&WHITE)
+            .y_label_style(("monospace", 25, &WHITE).into_text_style(lower))
             .y_desc("Phase [deg]")
             .draw()
             .unwrap();
